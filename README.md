@@ -2,6 +2,8 @@
 
 Update Adreno GPU firmware on Snapdragon X Elite / X Plus laptops from Qualcomm's Windows Graphics Driver package.
 
+> **Early release.** This software is provided "as is", without warranty of any kind. Use at your own risk. You are solely responsible for any consequences of running this script. Always use `--dry-run` first to review changes before installing.
+
 ## Why
 
 My goal is to keep the firmware up to date without requiring a dedicated Windows partition. The scripts retrieve the official Qualcomm Windows drivers and perform the firmware update from within a Linux environment.
@@ -147,3 +149,9 @@ https://softwarecenter.qualcomm.com/api/download/software/tools/Windows_Graphics
 
 Known versions:
 - `251208031.0.133.2` — December 2025, driver v31.0.133.2
+
+## Disclaimer
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+This script modifies system firmware files. Incorrect firmware can render your GPU or display non-functional. You are solely responsible for determining whether this script is suitable for your system. Always back up your data and verify changes with `--dry-run` before installing.
