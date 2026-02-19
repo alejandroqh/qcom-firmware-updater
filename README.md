@@ -2,7 +2,7 @@
 
 Update Adreno GPU firmware on Snapdragon X Elite / X Plus laptops from Qualcomm's Windows Graphics Driver package.
 
-> **Early release.** This software is provided "as is", without warranty of any kind. Use at your own risk. You are solely responsible for any consequences of running this script. Always use `--dry-run` first to review changes before installing.
+> **Early release.** Always use `--dry-run` first to review changes before installing.
 
 ## Why
 
@@ -18,7 +18,7 @@ This script:
 
 ## Supported devices
 
-Auto-detected from `/proc/device-tree/model`, matching the [qcom-firmware-extract](https://code.launchpad.net/ubuntu/+source/qcom-firmware-extract) device table:
+Auto-detected from `/proc/device-tree/model`:
 
 | SoC | Device | Firmware path |
 |-----|--------|---------------|
@@ -31,6 +31,7 @@ Auto-detected from `/proc/device-tree/model`, matching the [qcom-firmware-extrac
 | X Elite | Dell XPS 13 9345 | `x1e80100/dell/xps13-9345` |
 | X Plus | HP EliteBook 6 G1q | `x1p42100/hp/elitebook-6-g1q` |
 | X Elite | HP EliteBook Ultra G1q | `x1e80100/hp/elitebook-ultra-g1q` |
+| X Plus | HP OmniBook 5 16" OLED | `x1p42100/hp/omnibook-5` |
 | X Elite | HP Omnibook X 14 | `x1e80100/hp/omnibook-x14` |
 | X Plus | Lenovo ThinkBook 16 Gen 7 | `x1p42100/LENOVO/21NH` |
 | X Elite | Lenovo ThinkPad T14s Gen 6 | `x1e80100/LENOVO/21N1` |
@@ -124,23 +125,17 @@ Core GPU boot firmware (`gen71500_sqe.fw`, `gen71500_gmu.bin`, `gen71500_zap.mbn
 3. Removes Windows-only files (`.dll`, `.sys`, `.exe`, `.cat`, `.inf`, `.json`, `.so`, `.txt`) from the firmware directory
 4. Runs `update-initramfs` if display KMS firmware (`qcdxkmsuc8380.mbn`) changed
 
-## Relationship to qcom-firmware-extract
+## Complementary to qcom-firmware-extract
 
-| | `qcom-firmware-extract` | `qcom-firmware-updater.sh` |
-|---|---|---|
-| **Source** | Windows partition on disk | Qualcomm Graphics Driver download |
-| **Firmware** | DSP (ADSP, CDSP, battery) | GPU, display, video, shaders |
-| **Files** | 11 files (~25MB) | 17 files (~20MB) |
-| **Install to** | `/lib/firmware/updates/qcom/` | `/lib/firmware/qcom/` |
-| **Packaged** | Builds a .deb | Direct file install |
-
-Both are needed for full firmware coverage. Run `qcom-firmware-extract` first (for DSP), then this script (for GPU).
+[qcom-firmware-extract](https://code.launchpad.net/ubuntu/+source/qcom-firmware-extract) pulls DSP firmware from a Windows partition, while this script pulls GPU, display, and video firmware from Qualcomm's driver installer, no Windows partition needed.
 
 ## Checking for new versions
 
-Browse the Qualcomm Software Center for updated ARM64 Windows Graphics Drivers:
+Browse the [Qualcomm Software Center](https://softwarecenter.qualcomm.com/catalog/item/Windows_Graphics_Driver) for updated ARM64 Windows Graphics Drivers:
 - Product: **Windows Graphics Driver**
 - Platform: **Windows / ARM64**
+
+
 
 The download URL pattern is:
 ```

@@ -108,6 +108,9 @@ detect_device() {
         "HP EliteBook Ultra G1q")
             DEVICE_PATH="x1e80100/hp/elitebook-ultra-g1q"
             ;;
+        "HP OmniBook 5"*)
+            DEVICE_PATH="x1p42100/hp/omnibook-5"
+            ;;
         "HP Omnibook X 14")
             DEVICE_PATH="x1e80100/hp/omnibook-x14"
             ;;
@@ -151,6 +154,7 @@ Supported devices (from qcom-firmware-extract device table):
   X Elite (80100) Dell XPS 13 9345                    x1e80100/dell/xps13-9345
   X Plus  (42100) HP EliteBook 6 G1q                  x1p42100/hp/elitebook-6-g1q
   X Elite (80100) HP EliteBook Ultra G1q              x1e80100/hp/elitebook-ultra-g1q
+  X Plus  (42100) HP OmniBook 5 16" OLED               x1p42100/hp/omnibook-5
   X Elite (80100) HP Omnibook X 14                    x1e80100/hp/omnibook-x14
   X Plus  (42100) Lenovo ThinkBook 16 Gen 7           x1p42100/LENOVO/21NH
   X Elite (80100) Lenovo ThinkPad T14s Gen 6          x1e80100/LENOVO/21N1
