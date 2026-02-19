@@ -19,9 +19,7 @@ This script:
 ## Quick run
 
 ```bash
-curl -fsSL \
-  https://raw.githubusercontent.com/alejandroqh/qcom-firmware-updater/main/qcom-firmware-updater.sh \
-  | sudo bash
+curl -fsSL https://raw.githubusercontent.com/alejandroqh/qcom-firmware-updater/main/qcom-firmware-updater.sh | sudo bash
 ```
 
 The script will guide you through downloading and installing the latest firmware.
