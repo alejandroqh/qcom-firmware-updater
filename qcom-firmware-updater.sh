@@ -221,8 +221,24 @@ interactive_prompt() {
     cat >&2 <<EOF
 
   qcom-firmware-updater v${VERSION}
+
   Adreno GPU firmware updater for Snapdragon X Elite / X Plus
 
+  WARNING: This script modifies system firmware files. Incorrect firmware
+  can render your GPU or display non-functional. Always back up your data
+  and verify changes with --dry-run before installing.
+
+EOF
+
+    # Check OS and architecture — this script only works on Linux aarch64
+    local os arch
+    os="$(uname -s)"
+    arch="$(uname -m)"
+    if [[ "$os" != "Linux" || "$arch" != "aarch64" ]]; then
+        die "This script requires Linux on ARM64 (aarch64). Detected: $os $arch"
+    fi
+
+    cat >&2 <<EOF
   Download the latest ARM64 Windows Graphics Driver from:
   https://softwarecenter.qualcomm.com/catalog/item/Windows_Graphics_Driver
 
