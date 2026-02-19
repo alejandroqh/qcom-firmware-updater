@@ -9,12 +9,15 @@
 # Supports all Snapdragon X Elite / X Plus machines known to qcom-firmware-extract.
 # Auto-detects the device from /proc/device-tree/model, or use --device-path to override.
 #
+# Runs as a normal user; elevates with sudo only for the install step.
+#
 # Usage:
-#   sudo ./qcom-firmware-updater.sh /path/to/file.zip
-#   sudo ./qcom-firmware-updater.sh /path/to/file.exe
-#   sudo ./qcom-firmware-updater.sh --url "https://..."
-#   sudo ./qcom-firmware-updater.sh --dry-run /path/to/file.zip
-#   sudo ./qcom-firmware-updater.sh --device-path x1e80100/dell/xps13-9345 /path/to/file.zip
+#   ./qcom-firmware-updater.sh /path/to/file.zip
+#   ./qcom-firmware-updater.sh /path/to/file.exe
+#   ./qcom-firmware-updater.sh --url "https://..."
+#   ./qcom-firmware-updater.sh --dry-run /path/to/file.zip
+#   ./qcom-firmware-updater.sh --device-path x1e80100/dell/xps13-9345 /path/to/file.zip
+#   curl -fsSL <URL> | bash
 
 set -euo pipefail
 
@@ -218,6 +221,17 @@ parse_args() {
 }
 
 interactive_prompt() {
+    # Open a terminal fd for interactive reads (works even when piped)
+    local tty_fd
+    if [[ -t 0 ]]; then
+        tty_fd=0
+    elif [[ -c /dev/tty ]]; then
+        exec 3</dev/tty
+        tty_fd=3
+    else
+        die "No terminal available for interactive prompts. Provide arguments on the command line."
+    fi
+
     cat >&2 <<EOF
 
   qcom-firmware-updater v${VERSION}
@@ -236,7 +250,7 @@ EOF
 
     # Dry run by default
     local dry_run_answer
-    read -r -p "Dry run (compare only, no changes)? [Y/n]: " dry_run_answer < /dev/tty
+    read -r -p "Dry run (compare only, no changes)? [Y/n]: " dry_run_answer <&$tty_fd
     dry_run_answer="${dry_run_answer:-Y}"
     if [[ "$dry_run_answer" =~ ^[Yy] ]]; then
         DRY_RUN=true
@@ -251,7 +265,7 @@ EOF
 
 EOF
     local input
-    read -r -p "URL or file path: " input < /dev/tty
+    read -r -p "URL or file path: " input <&$tty_fd
     [[ -n "$input" ]] || die "No input provided"
 
     if [[ "$input" =~ ^https?:// ]]; then
@@ -263,11 +277,14 @@ EOF
     # If not dry run, confirm before modifying firmware
     if ! $DRY_RUN; then
         local confirm
-        read -r -p "This will modify system firmware. Continue? [y/N]: " confirm < /dev/tty
+        read -r -p "This will modify system firmware. Continue? [y/N]: " confirm <&$tty_fd
         if [[ ! "$confirm" =~ ^[Yy] ]]; then
             die "Aborted by user"
         fi
     fi
+
+    # Close the tty fd if we opened one
+    [[ $tty_fd -eq 3 ]] && exec 3<&-
 }
 
 usage() {
@@ -290,18 +307,20 @@ Options:
   -h, --help                  Show this help
 
 Examples:
-  # Auto-detect device, install from local ZIP
-  sudo ./qcom-firmware-updater.sh ~/Downloads/Windows_Graphics_Driver.Core.*.zip
+  # Auto-detect device, install from local ZIP (sudo prompted at install time)
+  ./qcom-firmware-updater.sh ~/Downloads/Windows_Graphics_Driver.Core.*.zip
 
   # Download driver package directly from Qualcomm
-  sudo ./qcom-firmware-updater.sh --url "https://softwarecenter.qualcomm.com/api/download/..."
+  ./qcom-firmware-updater.sh --url "https://softwarecenter.qualcomm.com/api/download/..."
 
-  # Compare checksums without installing
-  sudo ./qcom-firmware-updater.sh --dry-run ~/Downloads/driver.zip
+  # Compare checksums without installing (no sudo needed)
+  ./qcom-firmware-updater.sh --dry-run ~/Downloads/driver.zip
 
   # Unlisted device: manually specify where firmware gets installed
-  # Installs to /lib/firmware/qcom/<device-path>/
-  sudo ./qcom-firmware-updater.sh --device-path x1e80100/MYOEM/BOARD ~/Downloads/driver.zip
+  ./qcom-firmware-updater.sh --device-path x1e80100/MYOEM/BOARD ~/Downloads/driver.zip
+
+  # Pipe from curl (interactive prompts still work via /dev/tty)
+  curl -fsSL <URL> | bash
 EOF
 }
 
@@ -506,14 +525,17 @@ compare_firmware() {
 install_firmware() {
     local fw_staging="$1"
 
-    [[ $EUID -eq 0 ]] || die "Installation requires root. Run with sudo."
-    [[ -d "$FIRMWARE_DIR" ]] || die "Firmware directory not found: $FIRMWARE_DIR
-Create it with: sudo mkdir -p $FIRMWARE_DIR"
+    # Validate sudo credentials upfront (one password prompt before work begins)
+    info "Requesting elevated privileges for firmware installation..."
+    sudo -v || die "Failed to obtain sudo credentials"
+
+    # Create firmware directory if it doesn't exist
+    [[ -d "$FIRMWARE_DIR" ]] || sudo mkdir -p "$FIRMWARE_DIR"
 
     # Backup current firmware
     local backup_dir="${FIRMWARE_DIR}.bak-$(date +%Y%m%d-%H%M%S)"
     info "Backing up current firmware to $backup_dir"
-    cp -a "$FIRMWARE_DIR" "$backup_dir"
+    sudo cp -a "$FIRMWARE_DIR" "$backup_dir"
 
     # Install new firmware files
     local installed=0
@@ -533,9 +555,9 @@ Create it with: sudo mkdir -p $FIRMWARE_DIR"
             [[ "$cur_hash" != "$new_hash" ]] || continue
         fi
 
-        cp "$new_file" "$cur_file"
-        chmod 0644 "$cur_file"
-        chown root:root "$cur_file"
+        sudo cp "$new_file" "$cur_file"
+        sudo chmod 0644 "$cur_file"
+        sudo chown root:root "$cur_file"
         ((installed++))
 
         # Track if display firmware changed (needs initramfs update)
@@ -552,7 +574,7 @@ Create it with: sudo mkdir -p $FIRMWARE_DIR"
     # Update initramfs if display firmware changed
     if $kms_changed; then
         info "Display firmware changed — updating initramfs..."
-        update-initramfs -u -k "$(uname -r)"
+        sudo update-initramfs -u -k "$(uname -r)"
         info "Initramfs updated"
     fi
 }
@@ -565,7 +587,7 @@ cleanup_windows_files() {
         while IFS= read -r -d '' winfile; do
             local fsize
             fsize=$(stat -c%s "$winfile" 2>/dev/null || echo 0)
-            rm -f "$winfile"
+            sudo rm -f "$winfile"
             ((removed++))
             freed=$((freed + fsize))
         done < <(find "$FIRMWARE_DIR" -maxdepth 1 -type f -name "*.${ext}" -print0 2>/dev/null)
@@ -581,6 +603,7 @@ cleanup_windows_files() {
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 main() {
+    [[ $EUID -ne 0 ]] || warn "No need to run as root — sudo is used only when needed."
     parse_args "$@"
     check_deps
 

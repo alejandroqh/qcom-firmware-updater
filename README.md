@@ -20,7 +20,7 @@ This script:
 
 ```bash
 
-curl -fsSL https://raw.githubusercontent.com/alejandroqh/qcom-firmware-updater/main/qcom-firmware-updater.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/alejandroqh/qcom-firmware-updater/main/qcom-firmware-updater.sh | bash
 
 ```
 
@@ -66,19 +66,19 @@ sudo apt install 7zip msitools unzip curl
 
 ```bash
 # From a local ZIP (downloaded from Qualcomm Software Center)
-sudo ./qcom-firmware-updater.sh ~/Downloads/Windows_Graphics_Driver.Core.251208031.0.133.2.Windows-ARM64.zip
+./qcom-firmware-updater.sh ~/Downloads/Windows_Graphics_Driver.Core.251208031.0.133.2.Windows-ARM64.zip
 
 # From a local EXE (already extracted from ZIP)
-sudo ./qcom-firmware-updater.sh ~/Downloads/Qualcomm_Adreno_Driver-v31.0.133.2.exe
+./qcom-firmware-updater.sh ~/Downloads/Qualcomm_Adreno_Driver-v31.0.133.2.exe
 
 # Download directly from a URL
-sudo ./qcom-firmware-updater.sh --url "https://softwarecenter.qualcomm.com/api/download/software/tools/Windows_Graphics_Driver/Windows/ARM64/251208031.0.133.2/Windows_Graphics_Driver.Core.251208031.0.133.2.Windows-ARM64.zip"
+./qcom-firmware-updater.sh --url "https://softwarecenter.qualcomm.com/api/download/software/tools/Windows_Graphics_Driver/Windows/ARM64/251208031.0.133.2/Windows_Graphics_Driver.Core.251208031.0.133.2.Windows-ARM64.zip"
 
-# Dry run — compare only, don't install
-sudo ./qcom-firmware-updater.sh --dry-run ~/Downloads/Windows_Graphics_Driver.Core.*.zip
+# Dry run — compare only, don't install (no sudo needed)
+./qcom-firmware-updater.sh --dry-run ~/Downloads/Windows_Graphics_Driver.Core.*.zip
 
 # Override device detection for an unlisted machine
-sudo ./qcom-firmware-updater.sh --device-path x1e80100/dell/xps13-9345 driver.zip
+./qcom-firmware-updater.sh --device-path x1e80100/dell/xps13-9345 driver.zip
 
 # List supported devices
 ./qcom-firmware-updater.sh --list-devices
