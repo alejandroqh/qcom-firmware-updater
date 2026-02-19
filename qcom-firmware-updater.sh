@@ -224,10 +224,6 @@ interactive_prompt() {
 
   Adreno GPU firmware updater for Snapdragon X Elite / X Plus
 
-  WARNING: This script modifies system firmware files. Incorrect firmware
-  can render your GPU or display non-functional. Always back up your data
-  and verify changes with --dry-run before installing.
-
 EOF
 
     # Check OS and architecture — this script only works on Linux aarch64
@@ -238,7 +234,16 @@ EOF
         die "This script requires Linux on ARM64 (aarch64). Detected: $os $arch"
     fi
 
+    # Dry run by default
+    local dry_run_answer
+    read -r -p "Dry run (compare only, no changes)? [Y/n]: " dry_run_answer < /dev/tty
+    dry_run_answer="${dry_run_answer:-Y}"
+    if [[ "$dry_run_answer" =~ ^[Yy] ]]; then
+        DRY_RUN=true
+    fi
+
     cat >&2 <<EOF
+
   Download the latest ARM64 Windows Graphics Driver from:
   https://softwarecenter.qualcomm.com/catalog/item/Windows_Graphics_Driver
 
@@ -253,6 +258,15 @@ EOF
         INPUT_URL="$input"
     else
         INPUT_FILE="$input"
+    fi
+
+    # If not dry run, confirm before modifying firmware
+    if ! $DRY_RUN; then
+        local confirm
+        read -r -p "This will modify system firmware. Continue? [y/N]: " confirm < /dev/tty
+        if [[ ! "$confirm" =~ ^[Yy] ]]; then
+            die "Aborted by user"
+        fi
     fi
 }
 
