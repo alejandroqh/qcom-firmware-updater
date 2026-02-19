@@ -16,6 +16,14 @@ This script:
 - Updates initramfs automatically if display firmware changes
 - Auto-detects your device from `/proc/device-tree/model`
 
+## Quick run
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/alejandroqh/qcom-firmware-updater/main/qcom-firmware-updater.sh | sudo bash
+```
+
+The script will guide you through downloading and installing the latest firmware.
+
 ## Supported devices
 
 Auto-detected from `/proc/device-tree/model`:

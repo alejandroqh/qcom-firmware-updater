@@ -20,6 +20,7 @@ set -euo pipefail
 
 # ── Constants ────────────────────────────────────────────────────────────────
 
+VERSION="1.0.0"
 FIRMWARE_BASE="/lib/firmware/qcom"
 
 # Firmware files Linux actually uses (from the Qualcomm Graphics Driver)
@@ -189,6 +190,10 @@ parse_args() {
                 list_devices
                 exit 0
                 ;;
+            -V|--version)
+                echo "qcom-firmware-updater $VERSION"
+                exit 0
+                ;;
             -h|--help)
                 usage
                 exit 0
@@ -205,11 +210,33 @@ parse_args() {
     done
 
     if [[ -z "$INPUT_URL" && -z "$INPUT_FILE" ]]; then
-        usage
-        exit 1
+        interactive_prompt
     fi
     if [[ -n "$INPUT_URL" && -n "$INPUT_FILE" ]]; then
         die "Specify either --url or a file path, not both"
+    fi
+}
+
+interactive_prompt() {
+    cat >&2 <<EOF
+
+  qcom-firmware-updater v${VERSION}
+  Adreno GPU firmware updater for Snapdragon X Elite / X Plus
+
+  Download the latest ARM64 Windows Graphics Driver from:
+  https://softwarecenter.qualcomm.com/catalog/item/Windows_Graphics_Driver
+
+  You can paste the download URL or provide a path to an already-downloaded file.
+
+EOF
+    local input
+    read -r -p "URL or file path: " input < /dev/tty
+    [[ -n "$input" ]] || die "No input provided"
+
+    if [[ "$input" =~ ^https?:// ]]; then
+        INPUT_URL="$input"
+    else
+        INPUT_FILE="$input"
     fi
 }
 
@@ -229,6 +256,7 @@ Options:
                               (e.g. x1e80100/dell/xps13-9345)
   --list-devices              Show supported devices and exit
   --dry-run                   Compare only, don't install
+  -V, --version               Show version and exit
   -h, --help                  Show this help
 
 Examples:
