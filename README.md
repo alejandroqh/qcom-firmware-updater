@@ -1,6 +1,6 @@
 # qcom-firmware-updater.sh
 
-Update Adreno GPU firmware on Snapdragon X Elite / X Plus laptops from Qualcomm's Windows Graphics Driver package.
+Update Adreno GPU firmware on Snapdragon X Elite / X Plus laptops from Qualcomm's Windows Graphics Driver package in Linux.
 
 > **Early release.** Always use `--dry-run` first to review changes before installing.
 
