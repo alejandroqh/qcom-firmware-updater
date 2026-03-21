@@ -66,10 +66,10 @@ sudo apt install 7zip msitools unzip curl
 
 ```bash
 # From a local ZIP (downloaded from Qualcomm Software Center)
-./qcom-firmware-updater.sh ~/Downloads/Windows_Graphics_Driver.Core.251208031.0.133.2.Windows-ARM64.zip
+./qcom-firmware-updater.sh ~/Downloads/Windows_Graphics_Driver.Core.260228031.0.148.0.Windows-ARM64.zip
 
 # From a local EXE (already extracted from ZIP)
-./qcom-firmware-updater.sh ~/Downloads/Qualcomm_Adreno_Driver-v31.0.133.2.exe
+./qcom-firmware-updater.sh ~/Downloads/Qualcomm_Adreno_Driver-v31.0.148.0.exe
 
 # Download directly from a URL
 ./qcom-firmware-updater.sh --url "https://softwarecenter.qualcomm.com/api/download/software/tools/Windows_Graphics_Driver/Windows/ARM64/260228031.0.148.0/Windows_Graphics_Driver.Core.260228031.0.148.0.Windows-ARM64.zip"
@@ -154,6 +154,7 @@ https://softwarecenter.qualcomm.com/api/download/software/tools/Windows_Graphics
 
 Known versions:
 - `251208031.0.133.2` — December 2025, driver v31.0.133.2
+- `260228031.0.148.0` — February 2026, driver v31.0.148.0
 
 ## Disclaimer
 
