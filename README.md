@@ -72,7 +72,7 @@ sudo apt install 7zip msitools unzip curl
 ./qcom-firmware-updater.sh ~/Downloads/Qualcomm_Adreno_Driver-v31.0.133.2.exe
 
 # Download directly from a URL
-./qcom-firmware-updater.sh --url "https://softwarecenter.qualcomm.com/api/download/software/tools/Windows_Graphics_Driver/Windows/ARM64/251208031.0.133.2/Windows_Graphics_Driver.Core.251208031.0.133.2.Windows-ARM64.zip"
+./qcom-firmware-updater.sh --url "https://softwarecenter.qualcomm.com/api/download/software/tools/Windows_Graphics_Driver/Windows/ARM64/260228031.0.148.0/Windows_Graphics_Driver.Core.260228031.0.148.0.Windows-ARM64.zip"
 
 # Dry run — compare only, don't install (no sudo needed)
 ./qcom-firmware-updater.sh --dry-run ~/Downloads/Windows_Graphics_Driver.Core.*.zip
