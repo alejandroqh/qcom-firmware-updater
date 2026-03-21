@@ -398,8 +398,11 @@ extract_exe() {
         || die "Failed to extract EXE (is 7zip installed?)"
 
     # Stage 2: Extract the WiX attached container (MSI inside a CAB tail)
-    # The WiX Burn format appends the MSI payload as a Microsoft Cabinet
-    # archive at the end of the EXE. 7z reports its size as "Tail Size".
+    # The WiX Burn format appends a UX container (CAB) after the PE sections,
+    # followed by the attached container (another CAB holding the MSI).
+    # 7z reports the UX container's Offset within the PE and its Physical Size.
+    # The attached container starts right after the UX CAB + any signature data,
+    # so we locate it by searching for the second MSCF (CAB magic) in the EXE.
     info "Stage 2: Extracting attached container..."
     local tail_size
     tail_size=$(echo "$sz_output" | sed -n 's/^Tail Size = //p')
@@ -407,22 +410,42 @@ extract_exe() {
         die "No attached container found in EXE (not a WiX Burn bundle?)"
     fi
 
-    local exe_size
-    exe_size=$(stat -c%s "$exe_path")
-    local tail_offset=$((exe_size - tail_size))
+    # Find the attached container by locating the second MSCF magic in the EXE.
+    # The first MSCF is the UX container; the second is the attached container.
+    local attached_cab="$extract_root/attached.cab"
+    local mscf_offsets
+    mscf_offsets=$(grep -boPa 'MSCF' "$exe_path" | head -2)
+    local attached_offset
+    attached_offset=$(echo "$mscf_offsets" | tail -1 | cut -d: -f1)
+    local ux_offset
+    ux_offset=$(echo "$mscf_offsets" | head -1 | cut -d: -f1)
+
+    if [[ -z "$attached_offset" || "$attached_offset" == "$ux_offset" ]]; then
+        die "Cannot locate attached container in EXE (only one CAB found)"
+    fi
+
+    # Read cabinet size from the MSCF header (bytes 8-11, little-endian u32)
+    local cab_size_hex
+    cab_size_hex=$(dd if="$exe_path" bs=1 skip=$((attached_offset + 8)) count=4 2>/dev/null | od -An -tx1 | tr -d ' ')
+    local cab_size
+    cab_size=$(printf '%d' "0x${cab_size_hex:6:2}${cab_size_hex:4:2}${cab_size_hex:2:2}${cab_size_hex:0:2}")
+
+    info "Attached container at offset $attached_offset, size $cab_size"
 
     # Extract the CAB using efficient block-aligned dd
-    local attached_cab="$extract_root/attached.cab"
     local bs=65536
-    local skip_blocks=$((tail_offset / bs))
-    local skip_remainder=$((tail_offset % bs))
+    local skip_blocks=$((attached_offset / bs))
+    local skip_remainder=$((attached_offset % bs))
 
     if [[ $skip_remainder -eq 0 ]]; then
-        dd if="$exe_path" of="$attached_cab" bs="$bs" skip="$skip_blocks" 2>/dev/null
+        dd if="$exe_path" of="$attached_cab" bs="$bs" skip="$skip_blocks" \
+            count=$(( (cab_size + bs - 1) / bs )) 2>/dev/null
+        # Truncate to exact CAB size
+        truncate -s "$cab_size" "$attached_cab"
     else
         # Not block-aligned: skip whole blocks first, then trim leading bytes
         dd if="$exe_path" bs="$bs" skip="$skip_blocks" 2>/dev/null \
-            | dd of="$attached_cab" bs=1 skip="$skip_remainder" 2>/dev/null
+            | dd of="$attached_cab" bs=1 skip="$skip_remainder" count="$cab_size" 2>/dev/null
     fi
 
     [[ -s "$attached_cab" ]] || die "Failed to extract attached container"
