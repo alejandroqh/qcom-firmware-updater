@@ -284,7 +284,9 @@ EOF
     fi
 
     # Close the tty fd if we opened one
-    [[ $tty_fd -eq 3 ]] && exec 3<&-
+    if [[ $tty_fd -eq 3 ]]; then
+        exec 3<&-
+    fi
 }
 
 usage() {
