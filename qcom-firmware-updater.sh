@@ -486,7 +486,7 @@ find_firmware() {
         fw_path=$(find "$extract_root" -iname "$fw_name" -type f 2>/dev/null | head -1)
         if [[ -n "$fw_path" ]]; then
             cp "$fw_path" "$fw_staging/$fw_name"
-            ((found++))
+            ((++found))
         fi
     done
 
@@ -512,7 +512,7 @@ compare_firmware() {
 
         if [[ ! -f "$new_file" ]]; then
             printf "%-35s  %-8s  %s\n" "$fw_name" "SKIP" "(not in package)"
-            ((missing++))
+            ((++missing))
             continue
         fi
 
@@ -523,7 +523,7 @@ compare_firmware() {
 
         if [[ ! -f "$cur_file" ]]; then
             printf "%-35s  \e[33m%-8s\e[0m  %s\n" "$fw_name" "NEW" "$new_size_h"
-            ((new_fw++))
+            ((++new_fw))
             continue
         fi
 
@@ -533,10 +533,10 @@ compare_firmware() {
 
         if [[ "$cur_hash" == "$new_hash" ]]; then
             printf "%-35s  %-8s  %s\n" "$fw_name" "SAME" "$new_size_h"
-            ((same++))
+            ((++same))
         else
             printf "%-35s  \e[32m%-8s\e[0m  %s\n" "$fw_name" "CHANGED" "$new_size_h"
-            ((changed++))
+            ((++changed))
         fi
     done
 
@@ -583,7 +583,7 @@ install_firmware() {
         sudo cp "$new_file" "$cur_file"
         sudo chmod 0644 "$cur_file"
         sudo chown root:root "$cur_file"
-        ((installed++))
+        ((++installed))
 
         # Track if display firmware changed (needs initramfs update)
         if [[ "$fw_name" == "qcdxkmsuc8380.mbn" || "$fw_name" == "qcdxkmsucpurwa.mbn" ]]; then
@@ -613,7 +613,7 @@ cleanup_windows_files() {
             local fsize
             fsize=$(stat -c%s "$winfile" 2>/dev/null || echo 0)
             sudo rm -f "$winfile"
-            ((removed++))
+            ((++removed))
             freed=$((freed + fsize))
         done < <(find "$FIRMWARE_DIR" -maxdepth 1 -type f -name "*.${ext}" -print0 2>/dev/null)
     done
@@ -662,7 +662,7 @@ main() {
         if $DRY_RUN; then
             info "Dry run — no changes made"
         else
-            echo
+            #echo
             install_firmware "$fw_staging"
             info "Done. Reboot to load updated firmware."
         fi
