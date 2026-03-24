@@ -599,7 +599,10 @@ install_firmware() {
     # Update initramfs if display firmware changed
     if $kms_changed; then
         info "Display firmware changed — updating initramfs..."
-        sudo update-initramfs -u -k "$(uname -r)"
+        if ! sudo update-initramfs -u -k "$(uname -r)"; then
+            error "Failed to update initramfs — check available disk space on /boot"
+            return 1
+        fi
         info "Initramfs updated"
     fi
 }
