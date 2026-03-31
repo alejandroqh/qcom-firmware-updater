@@ -115,13 +115,13 @@ detect_device() {
         "HP OmniBook 5"*)
             DEVICE_PATH="x1p42100/hp/omnibook-5"
             ;;
-        "HP Omnibook X 14")
+        "HP Omnibook X 14"*)
             DEVICE_PATH="x1e80100/hp/omnibook-x14"
             ;;
         "Lenovo ThinkBook 16 Gen 7"*)
             DEVICE_PATH="x1p42100/LENOVO/21NH"
             ;;
-        "Lenovo ThinkPad T14s Gen 6")
+        "Lenovo ThinkPad T14s Gen 6"*)
             DEVICE_PATH="x1e80100/LENOVO/21N1"
             ;;
         "Lenovo Yoga Slim 7x")
