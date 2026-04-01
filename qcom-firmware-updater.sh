@@ -112,7 +112,7 @@ detect_device() {
         "HP EliteBook Ultra G1q")
             DEVICE_PATH="x1e80100/hp/elitebook-ultra-g1q"
             ;;
-        "HP OmniBook 5"*)
+        "HP Omnibook 5"*)
             DEVICE_PATH="x1p42100/hp/omnibook-5"
             ;;
         "HP Omnibook X 14"*)
