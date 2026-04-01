@@ -41,7 +41,7 @@ Auto-detected from `/proc/device-tree/model`:
 | X Elite | Dell XPS 13 9345 | `x1e80100/dell/xps13-9345` |
 | X Plus | HP EliteBook 6 G1q | `x1p42100/hp/elitebook-6-g1q` |
 | X Elite | HP EliteBook Ultra G1q | `x1e80100/hp/elitebook-ultra-g1q` |
-| X Plus | HP OmniBook 5 16" OLED | `x1p42100/hp/omnibook-5` |
+| X Plus | HP Omnibook 5 16" OLED | `x1p42100/hp/omnibook-5` |
 | X Elite | HP Omnibook X 14 (incl. -fe1 variant) | `x1e80100/hp/omnibook-x14` |
 | X Plus | Lenovo ThinkBook 16 Gen 7 | `x1p42100/LENOVO/21NH` |
 | X Elite | Lenovo ThinkPad T14s Gen 6 (incl. OLED) | `x1e80100/LENOVO/21N1` |
