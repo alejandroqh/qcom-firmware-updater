@@ -160,6 +160,7 @@ Known versions:
 ## Contributors
 
  - [Axel Guckelsberger](https://github.com/Guite) — fix for firmware counter increment under `set -e`
+ - [Marek Grzelak](https://github.com/seqre) - Added Support to Acer Swift Go 14 AI (SFG14-01)
 
 ## Disclaimer
 
