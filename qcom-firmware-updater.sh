@@ -88,6 +88,9 @@ detect_device() {
         "Acer Swift 14 AI (SF14-11)")
             DEVICE_PATH="x1e80100/ACER/SF14-11"
             ;;
+	"Acer Swift Go 14 AI (SFG14-01)")
+            DEVICE_PATH="x1p42100/ACER/SFG14-01"
+            ;;
         "ASUS Vivobook S 15")
             DEVICE_PATH="x1e80100/ASUSTeK/vivobook-s15"
             ;;

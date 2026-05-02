@@ -33,6 +33,7 @@ Auto-detected from `/proc/device-tree/model`:
 | SoC | Device | Firmware path |
 |-----|--------|---------------|
 | X Elite | Acer Swift 14 AI (SF14-11) | `x1e80100/ACER/SF14-11` |
+| X Plus | Acer Swift Go 14 AI (SFG14-01) | `x1p42100/ACER/SFG14-01` |
 | X Elite | ASUS Vivobook S 15 | `x1e80100/ASUSTeK/vivobook-s15` |
 | X Plus | ASUS Zenbook A14 (UX3407QA) | `x1p42100/ASUSTeK/zenbook-a14` |
 | X Elite | ASUS Zenbook A14 (UX3407RA) | `x1e80100/ASUSTeK/zenbook-a14` |
