@@ -150,10 +150,11 @@ Browse the [Qualcomm Software Center](https://softwarecenter.qualcomm.com/catalo
 
 The download URLfor the last version:
 ```
-https://softwarecenter.qualcomm.com/api/download/software/tools/Windows_Graphics_Driver/Windows/ARM64/260228031.0.148.0/Windows_Graphics_Driver.Core.260228031.0.148.0.Windows-ARM64.zip
+https://softwarecenter.qualcomm.com/api/download/software/tools/Windows_Graphics_Driver/Windows/ARM64/260523131.0.152.1/Windows_Graphics_Driver.Core.260523131.0.152.1.Windows-ARM64.zip
 ```
 
 Known versions:
+- `260523131.0.152.1` — June 2026, driver v31.0.152.1
 - `260228031.0.148.0` — February 2026, driver v31.0.148.0
 - `251208031.0.133.2` — December 2025, driver v31.0.133.2
 
