@@ -392,6 +392,34 @@ extract_exe() {
             ;;
     esac
 
+    # New format (2026.10.1+): ARM64 AdrenoInstaller EXE whose payload is a
+    # ZIP stored as a PE resource (.rsrc/RCDATA/104). 7z opens the nested ZIP
+    # directly. Entries use Windows paths (e.g. "qcdx8380\qcav1e8380.mbn"),
+    # which 7z extracts as flat names containing a literal backslash.
+    # (Capture first: "sz l | grep -q" can SIGPIPE 7z and fail under pipefail.)
+    local sz_listing
+    sz_listing=$(sz l "$exe_path" 2>/dev/null || true)
+    if grep -q '^Type = zip' <<<"$sz_listing"; then
+        info "Detected AdrenoInstaller package (embedded ZIP payload)"
+        local payload="$extract_root/payload"
+        mkdir -p "$payload"
+        sz x "$exe_path" -o"$payload" -y '*.mbn' '*.bin' >/dev/null 2>&1 \
+            || die "Failed to extract embedded payload (is 7zip installed?)"
+
+        # Turn "qcdx8380\file" into "qcdx8380/file"
+        local f name target
+        for f in "$payload"/*\\*; do
+            [[ -e "$f" ]] || continue
+            name=$(basename "$f")
+            target="$payload/${name//\\//}"
+            mkdir -p "$(dirname "$target")"
+            mv "$f" "$target"
+        done
+
+        echo "$extract_root"
+        return
+    fi
+
     # Stage 1: Extract WiX Burn bootstrapper EXE with 7z
     # This gets the UX payloads (XML manifest, DLLs, icons) but NOT the
     # attached container which holds the MSI. 7z reports it as "Tail Size".

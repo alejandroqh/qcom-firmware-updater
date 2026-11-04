@@ -108,6 +108,21 @@ The extraction pipeline:
 3. **CAB → MSI** — `7z` extracts the Cabinet to get the MSI installer
 4. **MSI → files** — `msiextract` (not `7z`) extracts with real filenames preserved
 
+### New package format (2026.10.1 and later)
+
+Starting with `2026.10.1`, Qualcomm ships a different installer, which the script detects automatically:
+
+```
+ZIP
+ └── Qualcomm_Adreno_Driver-v*.exe    (AdrenoInstaller, PE32+ ARM64)
+      └── .rsrc/RCDATA/104             (embedded ZIP)   ← extracted by 7z
+           ├── qcdx8380\*.mbn, *.bin   (X Elite / X Plus firmware) ✓
+           ├── qcdx8480\...            (X2 Elite, not handled)     ✗
+           └── *.dll, *.sys, *.msix, ...                           ✗
+```
+
+`7z` extracts only the `*.mbn`/`*.bin` entries, and the script turns their Windows-style `qcdx8380\file` names into directories. This format doesn't need `msitools`. `sequence_manifest.bin`, `unified_kbcs_{32,64}.bin` and `unified_ksqs.bin` are no longer shipped as separate files, so they show up as `SKIP` and the copies you already have stay in place.
+
 ## Firmware files
 
 The 17 files Linux uses from the Graphics Driver package:
@@ -148,12 +163,13 @@ Browse the [Qualcomm Software Center](https://softwarecenter.qualcomm.com/catalo
 
 
 
-The download URLfor the last version:
+The download URL for the latest version:
 ```
-https://softwarecenter.qualcomm.com/api/download/software/tools/Windows_Graphics_Driver/Windows/ARM64/260523131.0.152.1/Windows_Graphics_Driver.Core.260523131.0.152.1.Windows-ARM64.zip
+https://softwarecenter.qualcomm.com/api/download/software/tools/Windows_Graphics_Driver/Windows/ARM64/2026.10.1/Qualcomm_Adreno_Driver-v2026.10.1.zip
 ```
 
 Known versions:
+- `2026.10.1` — October 2026, new AdrenoInstaller format (`Qualcomm_Adreno_Driver-v*.zip`, see [New package format](#new-package-format-20261-and-later))
 - `260523131.0.152.1` — June 2026, driver v31.0.152.1
 - `260228031.0.148.0` — February 2026, driver v31.0.148.0
 - `251208031.0.133.2` — December 2025, driver v31.0.133.2
